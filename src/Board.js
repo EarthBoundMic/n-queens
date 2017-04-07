@@ -79,9 +79,10 @@
     //
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
+      var rows = this.rows();
       var count = 0;
-      for (var i = 0; i < rowIndex.length; i++) {
-        if (rowIndex[i] === 1) {
+      for (var i = 0; i < rows[rowIndex].length; i++) {
+        if (rows[rowIndex][i] === 1) {
           count++;
         }
         if (count > 1) {
@@ -95,7 +96,7 @@
     hasAnyRowConflicts: function() {
       var rows = this.rows();
       for (var i = 0; i < rows.length; i++) {
-        if (this.hasRowConflictAt(rows[i])) {
+        if (this.hasRowConflictAt(i)) {
           return true;
         }
       }
@@ -109,6 +110,7 @@
     //
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
+
       var count = 0;
       var rows = this.rows();
       for (var i = 0; i < rows.length; i++ ) {
@@ -142,38 +144,29 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
-      var count = 0;
-      for ( var i = 0; i < majorDiagonalColumnIndexAtFirstRow.length; i++) {
-        if (majorDiagonalColumnIndexAtFirstRow[i] === 1 ) {
-          count++;
+      var rows = this.rows();
+      var diagonal = [];
+      var index = majorDiagonalColumnIndexAtFirstRow;
+      for (var i = 0; i < rows.length; i++) {  
+        var currentDiagonal = rows[i];
+        if (currentDiagonal[index]) {
+          diagonal.push(currentDiagonal[index]);
         }
+        index++;
       }
-      if (count > 1) {
-        return true;
-      }
-      return false;
+      return diagonal.length > 1;
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
       var rows = this.rows();
-      var col = rows[0].length;
       var bool = false;
-      for (var i = 0; i < rows.length + col - 1; i++) {
-        var x = i;
-        var y = col - 1;
-        var tempArray = [];
-        while (x >= 0 && y >= 0) {
-          if (x < rows.length) {
-            tempArray.push(rows[x][y]);
-          }
-          x--;
-          y--;
-        }
-        bool = (bool) || (this.hasMinorDiagonalConflictAt(tempArray));
+      for (var i = (-1 * (rows.length - 1)); i < rows.length; i++) {
+        bool = bool || this.hasMajorDiagonalConflictAt(i);
       }
       return bool;
     },
+
 /*
   push matrix to be one array
   traverse the for loop using i += n
@@ -186,38 +179,32 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
-      var count = 0;
-      for (var i = 0; i < minorDiagonalColumnIndexAtFirstRow.length; i++) {
-        if (minorDiagonalColumnIndexAtFirstRow[i] === 1) {
-          count++;
+      var rows = this.rows();
+      var diagonal = [];
+      var index = minorDiagonalColumnIndexAtFirstRow;
+      for (var i = 0; i < rows.length; i++) {
+        var currentDiagonal = rows[i];
+        if (currentDiagonal[index]) {
+          diagonal.push(currentDiagonal[index]);
+          
         }
+        index--;
       }
-      if (count > 1) {
-        return true;
-      }
-      return false;
+      return diagonal.length > 1; 
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
       var rows = this.rows();
-      var col = rows[0].length;
       var bool = false;
-      for (var i = 1; i < rows.length + col - 2; i++) {
-        var x = i;
-        var y = 0;
-        var tempArray = [];
-        while (x >= 0 && y < col) {
-          if (x < rows.length) {
-            tempArray.push(rows[x][y]);
-          }
-          x--;
-          y++;
-        }
-        bool = (bool) || (this.hasMinorDiagonalConflictAt(tempArray));
+      for (var i = rows.length + 1; i >= (-1 * (rows.length + 1)); i--) {
+        bool = bool || this.hasMinorDiagonalConflictAt(i);
       }
       return bool;
-    }
+    },
+
+    
+
 
     /*--------------------  End of Helper Functions  ---------------------*/
 
